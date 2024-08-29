@@ -3,6 +3,7 @@ This tool gives a quick overview of the logs uploaded.
 
 It displays the following data:
 * Filename
+* Flight time
 * Launch height (for F3K)
 * Max altitude reached
 * Duration

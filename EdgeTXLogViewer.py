@@ -40,18 +40,19 @@ def aggrid_interactive_table(df: pd.DataFrame):
         update_mode=GridUpdateMode.MODEL_CHANGED,
         height=min(34 + len(df) * 28, 400)
     )
+
     return selection
 
 def displayFlightGraph(df):
     # Create duration field
-    position = df.columns.get_loc('date')
+    position = df.columns.get_loc('datetime')
     df['duration'] = df.iloc[1:, position] - df.iat[0, position]+ pd.to_datetime('1970/01/01')
     
     # Create stats
     #st.write(df.agg({"Alt(m)":['max'], "1RSS(dB)":['min'], "2RSS(dB)":['min'], "RQly(%)":['min'], "TPWR(mW)":['max'], "1RSS(dB)":['min']}))
     
     # Flight stats
-    duration = pd.to_timedelta(df["date"].max() - df["date"].min(), unit='s')
+    duration = pd.to_timedelta(df["datetime"].max() - df["datetime"].min(), unit='s')
     #st.write("Flight time = ", getFlightTime(duration))
     
     # Create graph
@@ -108,11 +109,13 @@ def startViewer():
         df1=[]
         df2=[]
         for file in uploaded_files:
-            df1 = pd.read_csv(file, parse_dates={'date':["Date","Time"]}) # open csv file(s) and merge date time column
+            df1 = pd.read_csv(file, dtype={'Date': str, 'Time': str}) # open csv file(s)
+            df1['datetime'] = pd.to_datetime(df1.pop('Date') + ' ' + df1.pop('Time'), format="%Y-%m-%d %H:%M:%S.%f") # merge date time column
+            
             df2.append(df1)
             
             # Flight stats
-            duration = pd.to_timedelta(df1["date"].max() - df1["date"].min(), unit='s')
+            duration = pd.to_timedelta(df1["datetime"].max() - df1["datetime"].min(), unit='s')
             launchHeight = df1["Alt(m)"].head(10).max() # highest value in the first 10s
             newRow = {'Filename':file.name,'Flight time':getFlightTime(duration), 'Launch height (m)':launchHeight, 'Max altitude (m)':df1["Alt(m)"].max(), 'Min RSSI (dB)':df1["1RSS(dB)"].min(), 'Min RQly (%)':df1["RQly(%)"].min(), 'Max TPWR (mW)':df1["TPWR(mW)"].max()}
             dfSummary.append(newRow)

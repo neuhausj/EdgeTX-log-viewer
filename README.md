@@ -1,18 +1,20 @@
 # EdgeTX-log-viewer
-This tool gives a quick overview of the logs uploaded.
+This tool gives a quick overview of all the EdgeTX logs uploaded.
 
 It displays the following data:
+* Number of flightlog uploaded
 * Filename
 * Flight time
-* Launch height (for F3K)
-* Max altitude reached
-* Duration
+* Launch height (for F3K) - highest altitude of the first 10 seconds
+* Max altitude
 * Min RSSI
 * Min link quality
 * Max transmit power
 
-It also displayed a graph with altitude, vertical speed, RSSI and link quality.
+When a flight is selected, it also displayed a graph with altitude, vertical speed, RSSI and link quality.
 
-![telegram-cloud-photo-size-4-5944767928245274932-x](https://github.com/user-attachments/assets/900dccfe-68e9-44d1-b45d-25ac8559b881)
+<img width="546" alt="image" src="https://github.com/user-attachments/assets/bea28160-94e9-4f71-9b0d-206007f532b4">
 
-![telegram-cloud-photo-size-4-5944767928245274933-y](https://github.com/user-attachments/assets/b7178432-b3ff-4a2d-9022-66aa7fef94e1)
+<img width="538" alt="image" src="https://github.com/user-attachments/assets/5bf429f3-1201-4182-ba69-8d48bc25da36">
+
+<img width="543" alt="image" src="https://github.com/user-attachments/assets/d2681f84-1bfc-4115-b3d6-bc89e1e2d551">

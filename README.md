@@ -15,6 +15,8 @@ When a flight is selected, it also displayed a graph with altitude, vertical spe
 
 <img width="546" alt="image" src="https://github.com/user-attachments/assets/bea28160-94e9-4f71-9b0d-206007f532b4">
 
+<img width="543" alt="image" src="https://github.com/user-attachments/assets/d2681f84-1bfc-4115-b3d6-bc89e1e2d551">
+
 <img width="538" alt="image" src="https://github.com/user-attachments/assets/5bf429f3-1201-4182-ba69-8d48bc25da36">
 
-<img width="543" alt="image" src="https://github.com/user-attachments/assets/d2681f84-1bfc-4115-b3d6-bc89e1e2d551">
+

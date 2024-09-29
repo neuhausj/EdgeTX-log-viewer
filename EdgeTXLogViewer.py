@@ -43,7 +43,7 @@ def aggrid_interactive_table(df: pd.DataFrame):
 
     return selection
 
-def displayFlightGraph(df):
+def displayFlightGraph(df, conf):
     # Create duration field
     position = df.columns.get_loc('datetime')
     df['duration'] = df.iloc[1:, position] - df.iat[0, position]+ pd.to_datetime('1970/01/01')
@@ -59,15 +59,19 @@ def displayFlightGraph(df):
     layout = dict(
         hoversubplots="axis",
         hovermode="x",
-        grid=dict(rows=3, columns=1),
+        grid=dict(rows=5, columns=1),
         height=700
     )
+    
     data = [
-        go.Scatter(x=df["duration"] , y=df['Alt(m)'], mode='lines', name='Alt(m)', yaxis="y1",xaxis="x"),
-        go.Scatter(x=df["duration"] , y=df['VSpd(m/s)'], mode='lines', name='VSpd(m/s)', yaxis="y2",xaxis="x"),
-        go.Scatter(x=df["duration"] , y=df['RQly(%)'], mode='lines', name='RQly(%)', yaxis="y3",xaxis="x"),
-        go.Scatter(x=df["duration"] , y=df['1RSS(dB)'], mode='lines', name='1RSS(dB)', yaxis="y3",xaxis="x")
+        go.Scatter(x=df["duration"] , y=df[conf['Altitude']], mode='lines', name=conf['Altitude'], yaxis="y1",xaxis="x"),
+        go.Scatter(x=df["duration"] , y=df[conf['VSpd']], mode='lines', name=conf['VSpd'], yaxis="y2",xaxis="x"),
+        go.Scatter(x=df["duration"] , y=df[conf['RQly']], mode='lines', name=conf['RQly'], yaxis="y3",xaxis="x"),
+        go.Scatter(x=df["duration"] , y=df[conf['RSSI1']], mode='lines', name=conf['RSSI1'], yaxis="y4",xaxis="x"),
+        go.Scatter(x=df["duration"] , y=df[conf['RSSI2']], mode='lines', name=conf['RSSI2'], yaxis="y4",xaxis="x"),
+        go.Scatter(x=df["duration"] , y=df[conf['Antenna']], mode='lines', name=conf['Antenna'], yaxis="y5",xaxis="x"),
     ]
+    
     fig = go.Figure(data=data, layout=layout)
     fig.update_layout(margin=dict(l=20, r=20, t=20, b=20))
 
@@ -76,17 +80,17 @@ def displayFlightGraph(df):
     #st.write(peaks[["Alt(m)","duration"]])
 
     # Display max altitude reach
-    maxAlt = df["Alt(m)"].max()
-    launchAlt = df["Alt(m)"].head().max()
-    if df.iloc[df["Alt(m)"].idxmax()]["duration"] != df.iloc[df["Alt(m)"].head(10).idxmax()]["duration"]:
-        fig.add_annotation(x=df.iloc[df["Alt(m)"].idxmax()]["duration"] ,
+    maxAlt = df[conf['Altitude']].max()
+    launchAlt = df[conf['Altitude']].head().max()
+    if df.iloc[df[conf['Altitude']].idxmax()]["duration"] != df.iloc[df[conf['Altitude']].head(10).idxmax()]["duration"]:
+        fig.add_annotation(x=df.iloc[df[conf['Altitude']].idxmax()]["duration"] ,
                             y=maxAlt, showarrow=True,
                             text="max = "+str(maxAlt)+"m")
-        fig.add_annotation(x=df.iloc[df["Alt(m)"].head(10).idxmax()]["duration"] ,
+        fig.add_annotation(x=df.iloc[df[conf['Altitude']].head(10).idxmax()]["duration"] ,
                             y=launchAlt, showarrow=True,
                             text="launch = "+str(launchAlt)+"m")
     else:
-        fig.add_annotation(x=df.iloc[df["Alt(m)"].idxmax()]["duration"] ,
+        fig.add_annotation(x=df.iloc[df[conf['Altitude']].idxmax()]["duration"] ,
                             y=maxAlt, showarrow=True,
                             text="max = launch = "+str(maxAlt)+"m")
         
@@ -95,9 +99,45 @@ def displayFlightGraph(df):
 
     st.plotly_chart(fig, use_container_width=True)
 
+def loadConfigEdgeTx():
+    conf = {'Date': 'Date',
+            'Time': 'Time',
+            'Altitude' : 'Alt(m)',
+            'RSSI1': '1RSS(dB)',
+            'RSSI2': '2RSS(dB)',
+            'RQly': 'RQly(%)',
+            'TPwr': 'TPWR(mW)',
+            'VSpd': 'VSpd(m/s)',
+            'Antenna': 'Antenna'
+            }
+    return conf
+def loadConfigEthos():
+    conf = {'Date': 'Date',
+            'Time': 'Time',
+            'Altitude' : 'Altitude(m)',
+            'RSSI1': 'Rx RSSI1(dB)',
+            'RSSI2': 'Rx RSSI2(dB)',
+            'RQly': 'Rx Quality(%)',
+            'TPwr': 'Tx Power(mW)',
+            'VSpd': 'VSpeed(m/s)',
+            'Antenna': 'Antenna'
+            }
+    return conf
+
+
 def startViewer():
     st.set_page_config(layout="wide")
     st.title("EdgeTX log viewer")
+
+    radioType = st.radio("What's your radio?", ["EdgeTx", "Ethos"], index=1)
+    if radioType == 'EdgeTx':
+        conf = loadConfigEdgeTx()
+    else:
+        conf = loadConfigEthos()
+
+
+    print()
+    
 
     with st.form("my-form", clear_on_submit=True):
             uploaded_files = st.file_uploader("upload file", accept_multiple_files=True)
@@ -109,15 +149,15 @@ def startViewer():
         df1=[]
         df2=[]
         for file in uploaded_files:
-            df1 = pd.read_csv(file, dtype={'Date': str, 'Time': str}) # open csv file(s)
-            df1['datetime'] = pd.to_datetime(df1.pop('Date') + ' ' + df1.pop('Time'), format="%Y-%m-%d %H:%M:%S.%f") # merge date time column
+            df1 = pd.read_csv(file, dtype={conf['Date']: str, conf['Time']: str}) # open csv file(s)
+            df1['datetime'] = pd.to_datetime(df1.pop(conf['Date']) + ' ' + df1.pop(conf['Time']), format="%Y-%m-%d %H:%M:%S.%f") # merge date time column
             
             df2.append(df1)
             
             # Flight stats
             duration = pd.to_timedelta(df1["datetime"].max() - df1["datetime"].min(), unit='s')
-            launchHeight = df1["Alt(m)"].head(10).max() # highest value in the first 10s
-            newRow = {'Filename':file.name,'Flight time':getFlightTime(duration), 'Launch height (m)':launchHeight, 'Max altitude (m)':df1["Alt(m)"].max(), 'Min RSSI (dB)':df1["1RSS(dB)"].min(), 'Min RQly (%)':df1["RQly(%)"].min(), 'Max TPWR (mW)':df1["TPWR(mW)"].max()}
+            launchHeight = df1[conf['Altitude']].head(10).max() # highest value in the first 10s
+            newRow = {'Filename':file.name,'Flight time':getFlightTime(duration), 'Launch height (m)':launchHeight, 'Max altitude (m)':df1[conf['Altitude']].max(), 'Min RSSI1 (dB)':df1[conf['RSSI1']].min(), 'Min RSSI2 (dB)':df1[conf['RSSI2']].min(), 'Min RQly (%)':df1[conf['RQly']].min(), 'Max TPWR (mW)':df1[conf['TPwr']].max()}
             dfSummary.append(newRow)
             
         # Display flights summary
@@ -129,7 +169,7 @@ def startViewer():
         if selection.grid_state is not None:
             if "rowSelection" in selection.grid_state:
                 st.write("Flight graph")
-                displayFlightGraph(df2[int(selection.selected_rows_id[0])])
+                displayFlightGraph(df2[int(selection.selected_rows_id[0])], conf)
 
 if __name__ == '__main__':
     startViewer()

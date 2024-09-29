@@ -29,7 +29,8 @@ def aggrid_interactive_table(df: pd.DataFrame):
     options.configure_column("Flight time", width=60)
     options.configure_column("Launch height (m)", width=100)
     options.configure_column("Max altitude (m)", width=90)
-    options.configure_column("Min RSSI (dB)", width=75)
+    options.configure_column("Min RSSI1 (dB)", width=75)
+    options.configure_column("Min RSSI2 (dB)", width=75)
     options.configure_column("Min RQly (%)", width=70)
     options.configure_column("Max TPWR (mW)", width=90)
 
@@ -157,7 +158,15 @@ def startViewer():
             # Flight stats
             duration = pd.to_timedelta(df1["datetime"].max() - df1["datetime"].min(), unit='s')
             launchHeight = df1[conf['Altitude']].head(10).max() # highest value in the first 10s
-            newRow = {'Filename':file.name,'Flight time':getFlightTime(duration), 'Launch height (m)':launchHeight, 'Max altitude (m)':df1[conf['Altitude']].max(), 'Min RSSI1 (dB)':df1[conf['RSSI1']].min(), 'Min RSSI2 (dB)':df1[conf['RSSI2']].min(), 'Min RQly (%)':df1[conf['RQly']].min(), 'Max TPWR (mW)':df1[conf['TPwr']].max()}
+            newRow = {'Filename':file.name,
+                      'Flight time':getFlightTime(duration), 
+                      'Launch height (m)':launchHeight, 
+                      'Max altitude (m)':df1[conf['Altitude']].max(), 
+                      'Min RSSI1 (dB)':df1[conf['RSSI1']].min(), 
+                      'Min RSSI2 (dB)':df1[conf['RSSI2']].min(), 
+                      'Min RQly (%)':df1[conf['RQly']].min(), 
+                      'Max TPWR (mW)':df1[conf['TPwr']].max()
+                      }
             dfSummary.append(newRow)
             
         # Display flights summary

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""EdgeTXLogViewer.py: Upload your EdgeTX logs and display a summary of all flights and a curve if a flight is selected"""
+"""FlightLogViewer.py: Upload your Ethos or EdgeTx logs and display a summary of all flights and a curve if a flight is selected"""
 
 import pandas as pd
 import streamlit as st
@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 import time
 from st_aggrid import AgGrid, GridOptionsBuilder, ColumnsAutoSizeMode, GridUpdateMode
 
-
+# Format duration for humans
 def getFlightTime(duration):
     flightTime = duration.total_seconds()
     if flightTime < 60:
@@ -20,6 +20,7 @@ def getFlightTime(duration):
         flightTime = time.strftime("%-Hh%Mm%Ss", time.gmtime(flightTime))
     return flightTime
 
+# Display aggrid
 def aggrid_interactive_table(df: pd.DataFrame):
     options = GridOptionsBuilder.from_dataframe(df)
 
@@ -44,6 +45,7 @@ def aggrid_interactive_table(df: pd.DataFrame):
 
     return selection
 
+# Display Flight graphs
 def displayFlightGraph(df, conf):
     # Create duration field
     position = df.columns.get_loc('datetime')
@@ -100,6 +102,7 @@ def displayFlightGraph(df, conf):
 
     st.plotly_chart(fig, use_container_width=True)
 
+# Default EdgeTX config
 def loadConfigEdgeTx():
     conf = {'Date': 'Date',
             'Time': 'Time',
@@ -112,7 +115,8 @@ def loadConfigEdgeTx():
             'Antenna': 'Antenna'
             }
     return conf
-    
+
+# Default Ethos config
 def loadConfigEthos():
     conf = {'Date': 'Date',
             'Time': 'Time',
@@ -126,26 +130,24 @@ def loadConfigEthos():
             }
     return conf
 
-
+# Main function
 def startViewer():
     st.set_page_config(layout="wide")
     st.title("Flight log viewer")
 
+    # Check which radio is used
     radioType = st.radio("What's your radio?", ["EdgeTx", "Ethos"], index=1)
     if radioType == 'EdgeTx':
         conf = loadConfigEdgeTx()
     else:
         conf = loadConfigEthos()
 
-
-    print()
-    
-
+    # Upload form
     with st.form("my-form", clear_on_submit=True):
             uploaded_files = st.file_uploader("upload file", accept_multiple_files=True)
             submitted = st.form_submit_button("submit")
     if len(uploaded_files)>0:
-        # Summary
+        # Summary of flights
         st.write("Summary of my " + str(len(uploaded_files)) + " flights:")
         dfSummary=[]
         df1=[]
@@ -181,5 +183,6 @@ def startViewer():
                 st.write("Flight graph")
                 displayFlightGraph(df2[int(selection.selected_rows_id[0])], conf)
 
+# Start
 if __name__ == '__main__':
     startViewer()

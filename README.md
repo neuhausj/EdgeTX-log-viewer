@@ -1,5 +1,5 @@
-# EdgeTX-log-viewer
-This tool gives a quick overview of all the EdgeTX logs uploaded.
+# Flight-log-viewer
+This tool gives a quick overview of all the Ethos or EdgeTX logs uploaded.
 
 It displays the following data:
 * Number of flightlog uploaded
@@ -7,11 +7,11 @@ It displays the following data:
 * Flight time
 * Launch height (for F3K) - highest altitude of the first 10 seconds
 * Max altitude
-* Min RSSI
+* Min RSSI1 / RSSI2
 * Min link quality
 * Max transmit power
 
-When a flight is selected, it also displayed a graph with altitude, vertical speed, RSSI and link quality.
+When a flight is selected, it also displayed a graph with altitude, vertical speed, RSSI1, RSSI2, antenna and link quality.
 
 <img width="546" alt="image" src="https://github.com/user-attachments/assets/bea28160-94e9-4f71-9b0d-206007f532b4">
 

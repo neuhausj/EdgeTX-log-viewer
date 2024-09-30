@@ -112,6 +112,7 @@ def loadConfigEdgeTx():
             'Antenna': 'Antenna'
             }
     return conf
+    
 def loadConfigEthos():
     conf = {'Date': 'Date',
             'Time': 'Time',
@@ -128,7 +129,7 @@ def loadConfigEthos():
 
 def startViewer():
     st.set_page_config(layout="wide")
-    st.title("EdgeTX log viewer")
+    st.title("Flight log viewer")
 
     radioType = st.radio("What's your radio?", ["EdgeTx", "Ethos"], index=1)
     if radioType == 'EdgeTx':

@@ -62,8 +62,8 @@ def displayFlightGraph(df, conf):
     layout = dict(
         hoversubplots="axis",
         hovermode="x",
-        grid=dict(rows=5, columns=1),
-        height=700
+        grid=dict(rows=6, columns=1),
+        height=900
     )
     
     data = [
@@ -73,6 +73,7 @@ def displayFlightGraph(df, conf):
         go.Scatter(x=df["duration"] , y=df[conf['RSSI1']], mode='lines', name=conf['RSSI1'], yaxis="y4",xaxis="x"),
         go.Scatter(x=df["duration"] , y=df[conf['RSSI2']], mode='lines', name=conf['RSSI2'], yaxis="y4",xaxis="x"),
         go.Scatter(x=df["duration"] , y=df[conf['Antenna']], mode='lines', name=conf['Antenna'], yaxis="y5",xaxis="x"),
+        go.Scatter(x=df["duration"] , y=df[conf['TPwr']], mode='lines', name=conf['TPwr'], yaxis="y6",xaxis="x")
     ]
     
     fig = go.Figure(data=data, layout=layout)

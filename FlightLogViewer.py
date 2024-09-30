@@ -50,14 +50,14 @@ def displayFlightGraph(df, conf):
     # Create duration field
     position = df.columns.get_loc('datetime')
     df['duration'] = df.iloc[1:, position] - df.iat[0, position]+ pd.to_datetime('1970/01/01')
-    
+    df = df[1:] # Remove first element
     # Create stats
     #st.write(df.agg({"Alt(m)":['max'], "1RSS(dB)":['min'], "2RSS(dB)":['min'], "RQly(%)":['min'], "TPWR(mW)":['max'], "1RSS(dB)":['min']}))
     
     # Flight stats
     duration = pd.to_timedelta(df["datetime"].max() - df["datetime"].min(), unit='s')
     #st.write("Flight time = ", getFlightTime(duration))
-    
+
     # Create graph
     layout = dict(
         hoversubplots="axis",

@@ -113,7 +113,7 @@ def loadConfigEdgeTx():
             'RQly': 'RQly(%)',
             'TPwr': 'TPWR(mW)',
             'VSpd': 'VSpd(m/s)',
-            'Antenna': 'Antenna'
+            'Antenna': 'ANT'
             }
     return conf
 
